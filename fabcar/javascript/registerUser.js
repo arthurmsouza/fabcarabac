@@ -49,20 +49,18 @@ async function main() {
                 affiliation: 'org1.department1', 
                 enrollmentID: 'user1', 
                 role: 'client',
-                attrs:[
-                    {name:"firstName", value: "Nirmal", ecert: true},
-                    {name:"lastName", value: "Patel", ecert: true},
-                    {name:"carmake", value: "Ford", ecert: false}
-                ] 
+                attrs: [
+                    {name: "carmake", value: "Toyota", ecert: false},
+                ]
             }, adminIdentity);
-
-        const enrollment = await ca.enroll({ 
-            enrollmentID: 'user1', 
-            enrollmentSecret: secret,
-            attr_reqs:[
-                {name: "carmake", option: true}
-            ] 
-        });
+        const enrollment = await ca.enroll(
+            { 
+                enrollmentID: 'user1', 
+                enrollmentSecret: secret,
+                attr_reqs: [
+                    {name: "carmake", option: false},
+                ]
+            });
         const userIdentity = X509WalletMixin.createIdentity('Org1MSP', enrollment.certificate, enrollment.key.toBytes());
         wallet.import('user1', userIdentity);
         console.log('Successfully registered and enrolled admin user "user1" and imported it into the wallet');

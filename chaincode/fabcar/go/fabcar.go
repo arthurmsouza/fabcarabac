@@ -97,10 +97,14 @@ func (s *SmartContract) queryCar(APIstub shim.ChaincodeStubInterface, args []str
 func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Response {
 	cars := []Car{
 		Car{Make: "Toyota", Model: "Prius", Colour: "blue", Owner: "Tomoko"},
+		Car{Make: "Toyota", Model: "Camry", Colour: "blue", Owner: "Tomoko"},
+
 		Car{Make: "Ford", Model: "Mustang", Colour: "red", Owner: "Brad"},
+
 		Car{Make: "Ford", Model: "Fusion", Colour: "red", Owner: "Brad"},
 		Car{Make: "Ford", Model: "Focus", Colour: "red", Owner: "Brad"},
 		Car{Make: "Ford", Model: "Escape", Colour: "red", Owner: "Brad"},
+
 		Car{Make: "Hyundai", Model: "Tucson", Colour: "green", Owner: "Jin Soo"},
 		Car{Make: "Volkswagen", Model: "Passat", Colour: "yellow", Owner: "Max"},
 		Car{Make: "Tesla", Model: "S", Colour: "black", Owner: "Adriana"},
@@ -139,21 +143,21 @@ func (s *SmartContract) createCar(APIstub shim.ChaincodeStubInterface, args []st
 
 func (s *SmartContract) queryAllCars(APIstub shim.ChaincodeStubInterface) sc.Response {
 
-
-	// Check AssertAttributeValue
-	err := cid.AssertAttributeValue(APIstub, "carmake", "Ford")
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
+		
 	// Check GetAttributeValue
-	carmake, found, err := cid.GetAttributeValue(APIstub, "carmake")
+	carmake, makefound, err := cid.GetAttributeValue(APIstub, "carmake")
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 
-	fmt.Println("Make Found- ", found)
-	fmt.Println("Make- ", carmake)
+	fmt.Println("Car Make found : ", makefound)
+	fmt.Println("Car Make is : ", carmake)
+
+	// Check AssertAttibuteValue
+	makeErr := cid.AssertAttributeValue(APIstub, "carmake", "Toyota") 
+	if makeErr != nil {
+		return shim.Error("Assert error")
+	}
 
 	startKey := "CAR0"
 	endKey := "CAR999"
@@ -171,17 +175,15 @@ func (s *SmartContract) queryAllCars(APIstub shim.ChaincodeStubInterface) sc.Res
 	bArrayMemberAlreadyWritten := false
 	for resultsIterator.HasNext() {
 		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return shim.Error(err.Error())
+		}
 
-		fmt.Println(queryResponse.Key)
-		fmt.Println(queryResponse.Value)
-		var carObj Car
-		json.Unmarshal(queryResponse.Value, &carObj)
-		fmt.Println(carObj.Make)
+		var objCar Car
+		json.Unmarshal(queryResponse.Value, &objCar)
+		fmt.Println("Car make in loop : ", objCar.Make)
 
-		if strings.Contains(carObj.Make, carmake) == true {
-			if err != nil {
-				return shim.Error(err.Error())
-			}
+		if strings.Contains(objCar.Make, carmake) == true {
 			// Add a comma before array members, suppress it for the first array member
 			if bArrayMemberAlreadyWritten == true {
 				buffer.WriteString(",")
@@ -190,13 +192,13 @@ func (s *SmartContract) queryAllCars(APIstub shim.ChaincodeStubInterface) sc.Res
 			buffer.WriteString("\"")
 			buffer.WriteString(queryResponse.Key)
 			buffer.WriteString("\"")
-	
+
 			buffer.WriteString(", \"Record\":")
 			// Record is a JSON object, so we write as-is
 			buffer.WriteString(string(queryResponse.Value))
 			buffer.WriteString("}")
 			bArrayMemberAlreadyWritten = true
-		}
+		}		
 	}
 	buffer.WriteString("]")
 
