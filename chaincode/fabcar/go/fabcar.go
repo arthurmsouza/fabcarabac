@@ -35,9 +35,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hyperledger/fabric/core/chaincode/shim/ext/cid"
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-	sc "github.com/hyperledger/fabric/protos/peer"
+	"github.com/hyperledger/fabric-chaincode-go/pkg/cid"
+	"github.com/hyperledger/fabric-chaincode-go/shim"
+	sc "github.com/hyperledger/fabric-protos-go/peer"
 )
 
 // Define the Smart Contract structure
@@ -143,7 +143,6 @@ func (s *SmartContract) createCar(APIstub shim.ChaincodeStubInterface, args []st
 
 func (s *SmartContract) queryAllCars(APIstub shim.ChaincodeStubInterface) sc.Response {
 
-		
 	// Check GetAttributeValue
 	carmake, makefound, err := cid.GetAttributeValue(APIstub, "carmake")
 	if err != nil {
@@ -154,7 +153,7 @@ func (s *SmartContract) queryAllCars(APIstub shim.ChaincodeStubInterface) sc.Res
 	fmt.Println("Car Make is : ", carmake)
 
 	// Check AssertAttibuteValue
-	makeErr := cid.AssertAttributeValue(APIstub, "carmake", "Toyota") 
+	makeErr := cid.AssertAttributeValue(APIstub, "carmake", "Toyota")
 	if makeErr != nil {
 		return shim.Error("Assert error")
 	}
@@ -198,7 +197,7 @@ func (s *SmartContract) queryAllCars(APIstub shim.ChaincodeStubInterface) sc.Res
 			buffer.WriteString(string(queryResponse.Value))
 			buffer.WriteString("}")
 			bArrayMemberAlreadyWritten = true
-		}		
+		}
 	}
 	buffer.WriteString("]")
 
@@ -225,12 +224,9 @@ func (s *SmartContract) changeCarOwner(APIstub shim.ChaincodeStubInterface, args
 	return shim.Success(nil)
 }
 
-// The main function is only relevant in unit test mode. Only included here for completeness.
 func main() {
-
-	// Create a new Smart Contract
 	err := shim.Start(new(SmartContract))
 	if err != nil {
-		fmt.Printf("Error creating new Smart Contract: %s", err)
+		fmt.Printf("Error starting Simple chaincode: %s", err)
 	}
 }
