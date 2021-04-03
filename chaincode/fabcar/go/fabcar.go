@@ -153,10 +153,10 @@ func (s *SmartContract) queryAllCars(APIstub shim.ChaincodeStubInterface) sc.Res
 	fmt.Println("Car Make is : ", carmake)
 
 	// Check AssertAttibuteValue
-	makeErr := cid.AssertAttributeValue(APIstub, "carmake", "Toyota")
-	if makeErr != nil {
-		return shim.Error("Assert error")
-	}
+	//makeErr := cid.AssertAttributeValue(APIstub, "carmake", "Toyota")
+	//if makeErr != nil {
+	//	return shim.Error("Assert error")
+	//}
 
 	startKey := "CAR0"
 	endKey := "CAR999"
