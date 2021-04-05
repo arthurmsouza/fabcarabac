@@ -46,10 +46,13 @@ async function main() {
         const adminUser = await provider.getUserContext(adminIdentity, 'admin');
 
         // Register the user, enroll the user, and import the new identity into the wallet.
-        const secret = await ca.register({
+       const secret = await ca.register({
             affiliation: 'org1.department1',
             enrollmentID: 'appUser2',
-            role: 'client'
+            role: 'client',
+             attrs: [
+                {name: "carmake", value: "Toyota", ecert: true}
+            ]
         }, adminUser);
         const enrollment = await ca.enroll({
             enrollmentID: 'appUser2',
